@@ -66,8 +66,9 @@ const handleWebhook = async (req, res) => {
 
       const newPayment = {
         sessionId: session.id,
-        email: session.metadata.userEmail,
+        email: session.customer_email,
         courseId: session.metadata.courseId,
+        courseTitle: session.metadata.courseTitle,
         price: session.amount_total / 100,
         paymentStatus: session.payment_status,
         createdAt: new Date(),

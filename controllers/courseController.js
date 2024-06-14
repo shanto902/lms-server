@@ -1,5 +1,8 @@
 const { ObjectId } = require("mongodb");
+const connectDB = require("../config/db");
 let courseCollection;
+
+let paymentCollection;
 
 async function setCourseCollection(client) {
   const courseDB = client.db("courseDB");
@@ -22,6 +25,22 @@ const getCourseById = async (req, res) => {
   const id = req.params.id;
   const courseData = await courseCollection.findOne({ _id: new ObjectId(id) });
   res.send(courseData);
+};
+
+const getEnrolledCourses = async (req, res) => {
+  try {
+    const email = req.params.email;
+    console.log(email);
+    const client = await connectDB();
+    const paymentDB = await client.db("paymentDB");
+    paymentCollection = paymentDB.collection("paymentCollection");
+    const courses = await paymentCollection.find({ email: email }).toArray();
+    console.log(courses);
+    res.send(courses);
+  } catch (error) {
+    console.error("Error fetching courses by email:", error);
+    res.status(500).send("An error occurred while fetching courses");
+  }
 };
 
 const getCoursesByEmail = async (req, res) => {
@@ -61,5 +80,6 @@ module.exports = {
   updateCourse,
   getCoursesByEmail,
   deleteCourse,
+  getEnrolledCourses,
   courseCollection,
 };
