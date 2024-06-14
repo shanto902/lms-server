@@ -14,21 +14,18 @@ const port = process.env.PORT;
 
 app.use(cors());
 
-app.use(express.json());
-
-// Apply raw body parser middleware to the /webhooks route only
-app.use("/webhooks", express.raw({ type: "application/json" }));
-
 connectDB()
   .then((client) => {
     setCourseCollection(client);
     setUserCollection(client);
     setPaymentCollection(client);
 
+    app.use("/webhooks", webhookRoutes);
+
+    app.use(express.json());
     app.use("/api", courseRoutes);
     app.use("/api", userRoutes);
     app.use("/api", paymentRoutes);
-    app.use("/webhooks", webhookRoutes);
 
     app.get("/", (req, res) => {
       res.send("API is working");
