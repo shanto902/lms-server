@@ -9,6 +9,7 @@ async function setPaymentCollection(client) {
 
 const createPayment = async (req, res) => {
   const data = req.body;
+  console.log(data);
   try {
     const product = await stripe.products.create({
       name: data?.courseTitle || "DATA",
@@ -28,11 +29,12 @@ const createPayment = async (req, res) => {
         },
       ],
       mode: "payment",
-      success_url: "http://localhost:5173/create-payment/success",
-      cancel_url: "http://localhost:5173/cancel",
+      success_url: process.env.PAYMENT_SUCCESS_URL,
+      cancel_url: process.env.PAYMENT_CANCEL_URL,
       customer_email: data.userEmail,
       metadata: {
-        courseId: data.courseId,
+        courseId: data._id,
+        courseTitle: data.title,
       },
     });
 
@@ -53,12 +55,6 @@ const handleWebhook = async (req, res) => {
       sig,
       process.env.STRIPE_WEBHOOK_SECRET
     );
-
-    console.log({
-      body: req.body,
-      signature: sig,
-      key: process.env.STRIPE_WEBHOOK_SECRET,
-    });
   } catch (err) {
     console.error("⚠️  Webhook signature verification failed.", err.message);
     return res.status(400).send(`Webhook Error: ${err.message}`);
@@ -70,8 +66,8 @@ const handleWebhook = async (req, res) => {
 
       const newPayment = {
         sessionId: session.id,
-        email: session.customer_email,
-        courseTitle: session.metadata.courseTitle,
+        email: session.metadata.userEmail,
+        courseId: session.metadata.courseId,
         price: session.amount_total / 100,
         paymentStatus: session.payment_status,
         createdAt: new Date(),
