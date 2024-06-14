@@ -5,7 +5,7 @@ const { handleWebhook } = require("../controllers/paymentController");
 const router = express.Router();
 
 router.post(
-  "/webhook",
+  "/webhooks",
   express.raw({ type: "application/json" }),
   handleWebhook
 );
