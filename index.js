@@ -14,7 +14,6 @@ const port = process.env.PORT;
 
 app.use(cors());
 app.use(express.json());
-app.use(express.raw({ type: "application/json" }));
 
 connectDB()
   .then((client) => {
@@ -25,7 +24,7 @@ connectDB()
     app.use("/api", courseRoutes);
     app.use("/api", userRoutes);
     app.use("/api", paymentRoutes);
-    app.use("/", webhookRoutes);
+    app.use("/webhooks", webhookRoutes);
 
     app.get("/", (req, res) => {
       res.send("API is working");
