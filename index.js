@@ -13,7 +13,11 @@ const app = express();
 const port = process.env.PORT;
 
 app.use(cors());
+
 app.use(express.json());
+
+// Apply raw body parser middleware to the /webhooks route only
+app.use("/webhooks", express.raw({ type: "application/json" }));
 
 connectDB()
   .then((client) => {
