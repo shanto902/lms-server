@@ -5,7 +5,6 @@ let courseCollection;
 // Middleware to verify owner
 async function verifyOwner(req, res, next) {
   const userEmail = req.params.email;
-  console.log(userEmail);
 
   // Ensure courseCollection is initialized
   if (!courseCollection) {

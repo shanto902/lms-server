@@ -34,7 +34,7 @@ const createPayment = async (req, res) => {
       customer_email: data.userEmail,
       metadata: {
         courseId: data._id,
-        courseTitle: data.title,
+        courseTitle: data.courseTitle,
       },
     });
 

@@ -31,15 +31,35 @@ const getEnrolledCourses = async (req, res) => {
   try {
     const email = req.params.email;
     console.log(email);
+
     const client = await connectDB();
-    const paymentDB = await client.db("paymentDB");
-    paymentCollection = paymentDB.collection("paymentCollection");
-    const courses = await paymentCollection.find({ email: email }).toArray();
-    console.log(courses);
-    res.send(courses);
+    const paymentDB = client.db("paymentDB");
+    const paymentCollection = paymentDB.collection("paymentCollection");
+    const courseDB = client.db("courseDB");
+    const courseCollection = courseDB.collection("courseCollection");
+
+    const paidCourses = await paymentCollection
+      .find({ email: email })
+      .toArray();
+
+    const enrolledCourses = [];
+
+    for (const paidCourse of paidCourses) {
+      const courseId = paidCourse.courseId;
+
+      const courseData = await courseCollection.findOne({
+        _id: new ObjectId(courseId),
+      });
+
+      if (courseData) {
+        enrolledCourses.push(courseData);
+      }
+    }
+
+    res.json(enrolledCourses);
   } catch (error) {
-    console.error("Error fetching courses by email:", error);
-    res.status(500).send("An error occurred while fetching courses");
+    console.error("Error fetching enrolled courses:", error);
+    res.status(500).send("An error occurred while fetching enrolled courses");
   }
 };
 
